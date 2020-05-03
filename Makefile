@@ -4,4 +4,4 @@ build:
 
 .PHONY: run
 run:
-	OPERATOR_NAME=eks-ebs-node-operator WATCH_NAMESPACE="" eks-ebs-node-operator run --local
+	OPERATOR_NAME=eks-ebs-node-operator WATCH_NAMESPACE="" operator-sdk run --local

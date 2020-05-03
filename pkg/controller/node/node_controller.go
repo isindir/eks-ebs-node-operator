@@ -2,10 +2,15 @@ package node
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	corev1api "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -17,10 +22,19 @@ import (
 
 var log = logf.Log.WithName("controller_node")
 
-/**
-* USER ACTION REQUIRED: This is a scaffold file intended for the user to modify with their own Controller
-* business logic.  Delete these comments after modifying this file.*
- */
+const ExtendedResourceName string = "eks~1attachments~1EBS"
+
+const FilterLabel string = "beta.kubernetes.io/instance-type"
+
+var volumesPerNodeType = map[string]string{
+	"m5a.2xlarge": "20",
+}
+
+type JsonPayloadData struct {
+	Op    string `json:"op"`
+	Path  string `json:"path"`
+	Value string `json:"value"`
+}
 
 // Add creates a new Node Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
@@ -30,7 +44,7 @@ func Add(mgr manager.Manager) error {
 
 // newReconciler returns a new reconcile.Reconciler
 func newReconciler(mgr manager.Manager) reconcile.Reconciler {
-	return &ReconcileNode{client: mgr.GetClient(), scheme: mgr.GetScheme()}
+	return &ReconcileNode{client: mgr.GetClient(), scheme: mgr.GetScheme(), cfg: mgr.GetConfig()}
 }
 
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
@@ -59,17 +73,16 @@ type ReconcileNode struct {
 	// that reads objects from the cache and writes to the apiserver
 	client client.Client
 	scheme *runtime.Scheme
+	cfg    *rest.Config
 }
 
 // Reconcile reads that state of the cluster for a Node object and makes changes based on the state read
 // and what is in the Node.Spec
-// TODO(user): Modify this Reconcile function to implement your Controller logic.  This example creates
-// a Pod as an example
 // Note:
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
 func (r *ReconcileNode) Reconcile(request reconcile.Request) (reconcile.Result, error) {
-	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
+	reqLogger := log.WithValues("Request.Name", request.Name)
 	reqLogger.Info("Reconciling Node")
 
 	// Fetch the Node instance
@@ -86,7 +99,49 @@ func (r *ReconcileNode) Reconcile(request reconcile.Request) (reconcile.Result, 
 		return reconcile.Result{}, err
 	}
 
-	// Pod already exists - don't requeue
-	reqLogger.Info("Skip reconcile")
+	nodeType, typeFound := instance.Labels[FilterLabel]
+	extResourceValue, resValueFound := instance.Status.Capacity[corev1api.ResourceName(ExtendedResourceName)]
+	if typeFound {
+		volumes := volumesPerNodeType[nodeType]
+		if resValueFound || extResourceValue.String() != volumes {
+			reqLogger.Info("Reconcile: node capacity must be set to", "NodeType", nodeType, "MaxVolumes", volumes)
+
+			jsonData := make([]JsonPayloadData, 1)
+			jsonData[0].Op = "add"
+			jsonData[0].Path = fmt.Sprintf("/status/capacity/%s", ExtendedResourceName)
+			jsonData[0].Value = volumes
+
+			jsonStr, err := json.Marshal(jsonData)
+			if err != nil {
+				reqLogger.Info("Failed to marshal PayloadData")
+				return reconcile.Result{}, err
+			}
+
+			clientset, err := kubernetes.NewForConfig(r.cfg)
+			if err != nil {
+				reqLogger.Info("Failed to create clientset")
+				return reconcile.Result{}, err
+			}
+
+			res, err := clientset.
+				CoreV1().
+				Nodes().
+				Patch(instance.Name, types.JSONPatchType, jsonStr, "status")
+			if err != nil {
+				reqLogger.Info("Failed to patch the node", "NodeName", instance.Name)
+				return reconcile.Result{}, err
+			}
+
+			reqLogger.Info("Reconcile: Result", "NewNodeDefinition", res)
+		} else {
+			reqLogger.Info("External Resource Value is already set", "extResourceValue", extResourceValue.String())
+			return reconcile.Result{}, nil
+		}
+	} else {
+		reqLogger.Info("NodeType not found - skipping", "nodeType", nodeType)
+		return reconcile.Result{}, nil
+	}
+
+	reqLogger.Info("Finished reconcile")
 	return reconcile.Result{}, nil
 }
