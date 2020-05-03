@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-ebs-node-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: eks-ebs-node-operator
+  template:
+    metadata:
+      labels:
+        name: eks-ebs-node-operator
+    spec:
+      serviceAccountName: eks-ebs-node-operator
+      containers:
+        - name: eks-ebs-node-operator
+          # Replace this with the built image name
+          image: REPLACE_IMAGE
+          command:
+          - eks-ebs-node-operator
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "eks-ebs-node-operator"
