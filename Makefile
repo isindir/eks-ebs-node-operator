@@ -47,26 +47,12 @@ build:
 	@docker tag "${IMAGE_NAME}:${VERSION}" "${IMAGE_NAME}:latest"
 	@echo
 
-.PHONY: build/sdk
-## build/sdk: builds sdk docker image (not used)
-build/sdk:
-	@echo "Building sdk image"
-	@docker build .circleci -t "${SDK_IMAGE_NAME}"
-	@echo
-
 .PHONY: push
 ## push: pushes operator docker image to repository
 push:
 	@echo "Pushing"
 	@docker push "${IMAGE_NAME}:latest"
 	@docker push "${IMAGE_NAME}:${VERSION}"
-	@echo
-
-.PHONY: push/sdk
-## push/sdk: pushes sdk docker image to repository
-push/sdk:
-	@echo "Pushing"
-	@docker push "${SDK_IMAGE_NAME}"
 	@echo
 
 .PHONY: fmt
@@ -102,15 +88,6 @@ cluster/create:
 ## cluster/delete: deletes kind cluster
 cluster/delete:
 	@kind delete cluster --name operator
-
-.PHONY: run/sdk
-## run/sdk: runs sdk docker image
-run/sdk:
-	@docker run -v ~/.gitconfig:/root/.gitconfig \
-		-v ~/.gnupg:/root/.gnupg \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v ${PWD}:/go/src/github.com/isindir/eks-ebs-node-operator \
-		-ti "${SDK_IMAGE_NAME}" bash
 
 .PHONY: help
 ## help: prints this help message
