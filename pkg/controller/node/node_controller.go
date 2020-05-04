@@ -22,15 +22,15 @@ import (
 
 var log = logf.Log.WithName("controller_node")
 
-const ExtendedResourceName string = "eks~1attachments~1EBS"
+const extendedResourceName string = "eks~1attachments~1EBS"
 
-const FilterLabel string = "beta.kubernetes.io/instance-type"
+const filterLabel string = "beta.kubernetes.io/instance-type"
 
 var volumesPerNodeType = map[string]string{
 	"m5a.2xlarge": "20",
 }
 
-type JsonPayloadData struct {
+type jsonPayloadData struct {
 	Op    string `json:"op"`
 	Path  string `json:"path"`
 	Value string `json:"value"`
@@ -99,16 +99,16 @@ func (r *ReconcileNode) Reconcile(request reconcile.Request) (reconcile.Result, 
 		return reconcile.Result{}, err
 	}
 
-	nodeType, typeFound := instance.Labels[FilterLabel]
-	extResourceValue, resValueFound := instance.Status.Capacity[corev1api.ResourceName(ExtendedResourceName)]
+	nodeType, typeFound := instance.Labels[filterLabel]
+	extResourceValue, resValueFound := instance.Status.Capacity[corev1api.ResourceName(extendedResourceName)]
 	if typeFound {
 		volumes := volumesPerNodeType[nodeType]
 		if resValueFound || extResourceValue.String() != volumes {
 			reqLogger.Info("Reconcile: node capacity must be set to", "NodeType", nodeType, "MaxVolumes", volumes)
 
-			jsonData := make([]JsonPayloadData, 1)
+			jsonData := make([]jsonPayloadData, 1)
 			jsonData[0].Op = "add"
-			jsonData[0].Path = fmt.Sprintf("/status/capacity/%s", ExtendedResourceName)
+			jsonData[0].Path = fmt.Sprintf("/status/capacity/%s", extendedResourceName)
 			jsonData[0].Value = volumes
 
 			jsonStr, err := json.Marshal(jsonData)
