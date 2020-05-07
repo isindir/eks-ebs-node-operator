@@ -45,6 +45,7 @@ jobs:
             sudo mv git-chglog /usr/local/bin/
       - run:
           name: install hub
+          command: |
             curl -sSLO hub.tgz https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz
             tar -xzf hub-linux-amd64-${HUB_VERSION}.tgz
             chmod +x hub-linux-amd64-${HUB_VERSION}/bin/hub
