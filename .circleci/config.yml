@@ -17,7 +17,7 @@ jobs:
       - run:
           name: install golang
           command: |
-            sudo rm -fr ${GOROOT}
+            sudo rm -fr /usr/local/go
             curl -sSLO https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz
             tar -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
             sudo mv go /usr/local
@@ -91,7 +91,7 @@ jobs:
       - run:
           name: install golang
           command: |
-            sudo rm -fr ${GOROOT}
+            sudo rm -fr /usr/local/go
             curl -sSLO https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz
             tar -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
             sudo mv go /usr/local
