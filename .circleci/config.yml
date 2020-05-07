@@ -176,10 +176,10 @@ workflows:
       - build:
           filters:
             branches:
-              ignores: pipeline
+              ignore: pipeline
       - release:
           filters:
             branches:
-              ignores: master
+              ignore: master
           #requires:
           #  - build
