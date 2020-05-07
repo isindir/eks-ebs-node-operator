@@ -8,7 +8,10 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
     environment:
-      HUB_VERSION: v1.18.2
+      HUB_VERSION: 2.14.2
+      GOLANG_VERSION: 1.13.6
+      OPERATOR_SDK_VERSION: v0.17.0
+      GIT_CHGLOG_VERSION: 0.9.1
     steps:
       - checkout
       - restore-cache:
@@ -17,9 +20,44 @@ jobs:
             - v2-modules-{{ .Branch }}-
             - v2-modules-
       - run:
-          name: install hub
+          name: install golang
           command: |
-            echo "Installing hub"
+            sudo rm -fr ${GOROOT}
+            curl -sSLO https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz
+            tar -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
+            sudo mv go /usr/local
+            rm -fr go${GOLANG_VERSION}.linux-amd64.tar.gz
+            mkdir -p $GOPATH/{src/github.com/isindir,bin,pkg}
+            go get -u golang.org/x/lint/golint
+            go version
+            go env
+      - run:
+          name: install operator-sdk
+          command: |
+            curl -sSLo operator-sdk https://github.com/operator-framework/operator-sdk/releases/download/${OPERATOR_SDK_VERSION}/operator-sdk-${OPERATOR_SDK_VERSION}-x86_64-linux-gnu
+            chmod +x operator-sdk
+            sudo mv operator-sdk /usr/local/bin/
+      - run:
+          name: install git-chglog
+          command: |
+            curl -sSLo git-chglog https://github.com/git-chglog/git-chglog/releases/download/${GIT_CHGLOG_VERSION}/git-chglog_linux_amd64
+            chmod +x git-chglog
+            sudo mv git-chglog /usr/local/bin/
+      - run:
+          name: install hub
+            curl -sSLO hub.tgz https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz
+            tar -xzf hub-linux-amd64-${HUB_VERSION}.tgz
+            chmod +x hub-linux-amd64-${HUB_VERSION}/bin/hub
+            sudo mv hub-linux-amd64-${HUB_VERSION}/bin/hub /usr/local/bin/
+      - run:
+          name: Fetch Go dependencies
+          command: |
+            make mod
+      - run:
+          name: Build
+          command: |
+            make build
+
   build:
     working_directory: /home/circleci/gogo/src/github.com/isindir/eks-ebs-node-operator
     machine:
@@ -135,10 +173,13 @@ workflows:
   version: 2
   build_and_release:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignores: pipeline
       - release:
           filters:
             branches:
-              only: master
-          requires:
-            - build
+              ignores: master
+          #requires:
+          #  - build
