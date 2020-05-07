@@ -19,18 +19,18 @@ jobs:
             - v2-modules-{{ .Branch }}-{{ checksum "go.sum" }}
             - v2-modules-{{ .Branch }}-
             - v2-modules-
-      - run:
-          name: install golang
-          command: |
-            sudo rm -fr ${GOROOT}
-            curl -sSLO https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz
-            tar -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
-            sudo mv go /usr/local
-            rm -fr go${GOLANG_VERSION}.linux-amd64.tar.gz
-            mkdir -p $GOPATH/{src/github.com/isindir,bin,pkg}
-            go get -u golang.org/x/lint/golint
-            go version
-            go env
+      #- run:
+      #    name: install golang
+      #    command: |
+      #      sudo rm -fr ${GOROOT}
+      #      curl -sSLO https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz
+      #      tar -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
+      #      sudo mv go /usr/local
+      #      rm -fr go${GOLANG_VERSION}.linux-amd64.tar.gz
+      #      mkdir -p $GOPATH/{src/github.com/isindir,bin,pkg}
+      #      go get -u golang.org/x/lint/golint
+      #      go version
+      #      go env
       - run:
           name: install operator-sdk
           command: |
