@@ -81,7 +81,7 @@ run/local:
 .PHONY: cluster/create
 ## cluster/create: creates kind cluster and adds test label to a node
 cluster/create:
-	@kind create cluster --name operator
+	@kind create cluster --quiet --name operator
 	@kubectl label nodes operator-control-plane beta.kubernetes.io/instance-type=m5a.2xlarge
 
 .PHONY: cluster/delete
