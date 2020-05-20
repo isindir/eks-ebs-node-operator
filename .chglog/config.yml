@@ -2,7 +2,7 @@ style: github
 template: CHANGELOG.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://github.com/isindir/sops-secrets-operator
+  repository_url: https://github.com/isindir/eks-ebs-node-operator
 options:
   commits:
     filters:
