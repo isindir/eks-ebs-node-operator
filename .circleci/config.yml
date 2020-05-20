@@ -176,12 +176,11 @@ workflows:
   build_and_release:
     jobs:
       - build
-          #filters:
-          #  branches:
-          #    ignore: pipeline
+          filters:
+            branches:
+              ignore: master
       - release
-          #filters:
-          #  branches:
-          #    ignore: master
-          #requires:
-          #  - build
+          filters:
+            branches:
+              only:
+                - master
