@@ -65,6 +65,10 @@ jobs:
           name: Build
           command: |
             make build
+      - run:
+          name: release
+          command: |
+            make repo/release
 
   ##################################################
   # build
