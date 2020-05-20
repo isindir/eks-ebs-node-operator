@@ -8,9 +8,12 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
     environment:
+      # https://github.com/github/hub/releases
       HUB_VERSION: 2.14.2
-      GOLANG_VERSION: 1.13.6
-      OPERATOR_SDK_VERSION: v0.17.0
+      GOLANG_VERSION: 1.14.2
+      # https://github.com/operator-framework/operator-sdk/releases
+      OPERATOR_SDK_VERSION: v0.17.1
+      # https://github.com/git-chglog/git-chglog/releases
       GIT_CHGLOG_VERSION: 0.9.1
     steps:
       - checkout
