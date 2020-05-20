@@ -175,13 +175,13 @@ workflows:
   version: 2
   build_and_release:
     jobs:
-      - build:
-          filters:
-            branches:
-              ignore: pipeline
-      - release:
-          filters:
-            branches:
-              ignore: master
+      - build
+          #filters:
+          #  branches:
+          #    ignore: pipeline
+      - release
+          #filters:
+          #  branches:
+          #    ignore: master
           #requires:
           #  - build
