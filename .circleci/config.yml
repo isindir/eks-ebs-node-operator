@@ -3,6 +3,10 @@
 version: 2
 
 jobs:
+
+  ##################################################
+  # release
+  ##################################################
   release:
     working_directory: /home/circleci/gogo/src/github.com/isindir/eks-ebs-node-operator
     machine:
@@ -62,6 +66,9 @@ jobs:
           command: |
             make build
 
+  ##################################################
+  # build
+  ##################################################
   build:
     working_directory: /home/circleci/gogo/src/github.com/isindir/eks-ebs-node-operator
     machine:
