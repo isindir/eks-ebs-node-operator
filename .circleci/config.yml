@@ -175,11 +175,11 @@ workflows:
   version: 2
   build_and_release:
     jobs:
-      - build
+      - build:
           filters:
             branches:
               ignore: master
-      - release
+      - release:
           filters:
             branches:
               only:
