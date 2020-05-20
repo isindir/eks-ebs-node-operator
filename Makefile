@@ -74,11 +74,11 @@ check:
 release: build push
 
 .PHONY: repo/release
-## release: builds operator docker image and pushes it to docker repository
+## repo/release: create github release using hub command
 repo/release:
-	git tag "${VERSION_TAG}"
-	git-chglog "${VERSION_TAG}" > chglog.tmp
-	hub release create -F chglog.tmp "${VERSION_TAG}"
+	git tag "${VERSION}"
+	git-chglog "${VERSION}" > chglog.tmp
+	hub release create -F chglog.tmp "${VERSION}"
 
 .PHONY: run/local
 ## run/local: runs operator in local mode
