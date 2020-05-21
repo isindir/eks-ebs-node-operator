@@ -47,6 +47,12 @@ build:
 	@docker tag "${IMAGE_NAME}:${VERSION}" "${IMAGE_NAME}:latest"
 	@echo
 
+.PHONY: login
+## login: docker login for dockerhub - expects variables be defined
+login:
+	@echo "${DOCKERHUB_PASS}" | base64 -d \
+		| docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+
 .PHONY: push
 ## push: pushes operator docker image to repository
 push:
@@ -70,8 +76,23 @@ check:
 	@echo
 
 .PHONY: release
-## release: builds operator docker image and pushes it to docker repository
-release: build push
+## release: creates github release and pushes docker image to dockerhub
+release:
+	@{ \
+	  set +e ; \
+		git tag "${VERSION}" ; \
+	  tagResult=$?; \
+		if [[ ${tagResult} -ne 0 ]]; then \
+	    echo "Release '${VERSION}' exists - skipping" ; \
+		else \
+		  set -e ; \
+	    git-chglog "${VERSION}" > chglog.tmp ; \
+	    hub release create -F chglog.tmp "${VERSION}" ; \
+	    echo "${DOCKERHUB_PASS}" | base64 -d | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin ; \
+	    docker push "${IMAGE_NAME}:latest" ; \
+	    docker push "${IMAGE_NAME}:${VERSION}" ; \
+		fi ; \
+	}
 
 .PHONY: repo/release
 ## repo/release: create github release using hub command
