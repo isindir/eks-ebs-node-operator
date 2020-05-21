@@ -79,18 +79,18 @@ check:
 ## release: creates github release and pushes docker image to dockerhub
 release:
 	@{ \
-	  set +e ; \
+		set +e ; \
 		git tag "${VERSION}" ; \
-	  tagResult=$?; \
-		if [[ ${tagResult} -ne 0 ]]; then \
-	    echo "Release '${VERSION}' exists - skipping" ; \
+		tagResult=$$? ; \
+		if [[ $$tagResult -ne 0 ]]; then \
+			echo "Release '${VERSION}' exists - skipping" ; \
 		else \
-		  set -e ; \
-	    git-chglog "${VERSION}" > chglog.tmp ; \
-	    hub release create -F chglog.tmp "${VERSION}" ; \
-	    echo "${DOCKERHUB_PASS}" | base64 -d | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin ; \
-	    docker push "${IMAGE_NAME}:latest" ; \
-	    docker push "${IMAGE_NAME}:${VERSION}" ; \
+			set -e ; \
+			git-chglog "${VERSION}" > chglog.tmp ; \
+			hub release create -F chglog.tmp "${VERSION}" ; \
+			echo "${DOCKERHUB_PASS}" | base64 -d | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin ; \
+			docker push "${IMAGE_NAME}:latest" ; \
+			docker push "${IMAGE_NAME}:${VERSION}" ; \
 		fi ; \
 	}
 
