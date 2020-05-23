@@ -1,0 +1,16 @@
+{{- if .Values.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "eks-ebs-node-operator.fullname" . }}
+  labels:
+    {{- include "eks-ebs-node-operator.labels" . | nindent 4 }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "eks-ebs-node-operator.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: {{ include "eks-ebs-node-operator.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
