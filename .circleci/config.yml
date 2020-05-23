@@ -135,7 +135,7 @@ jobs:
       - run:
           name: start kind
           command: |
-            kind create cluster --name operator
+            kind create cluster --quiet --name operator
             JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
             until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
               sleep 1;
@@ -148,7 +148,7 @@ jobs:
             kubectl version
             kubectl describe node operator-control-plane
       - run:
-          name: setup helm
+          name: install helm
           command: |
             # install helm
             curl -sSL https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz | tar -xzvf - linux-amd64/helm
@@ -175,7 +175,7 @@ jobs:
             nohup make run/local &
             sleep 75
             RESULT=$( kubectl get node operator-control-plane -o json | jq -r '.status.capacity["eks/attachments/EBS"]' )
-            if [[ $RESULT != "20" ]]; then
+            if [[ $RESULT != "23" ]]; then
               echo "Pipeline failed"
               exit 1
             else
