@@ -36,7 +36,8 @@ clean:
 ## inspect: inspects remote docker 'image tag' - target fails if it does
 inspect:
 	@echo "Inspect remote image"
-	@! DOCKER_CLI_EXPERIMENTAL="enabled" docker manifest inspect ${IMAGE_NAME}:${VERSION} >/dev/null \
+	@! DOCKER_CLI_EXPERIMENTAL="enabled" docker \
+		manifest inspect ${IMAGE_NAME}:${VERSION} >/dev/null \
 		|| { echo "Image already exists"; exit 1; }
 
 .PHONY: build
@@ -110,12 +111,36 @@ run/local:
 ## cluster/create: creates kind cluster and adds test label to a node
 cluster/create:
 	@kind create cluster --quiet --name operator
-	@kubectl label nodes operator-control-plane beta.kubernetes.io/instance-type=m5a.2xlarge
+	@kubectl label nodes \
+		operator-control-plane beta.kubernetes.io/instance-type=m5a.2xlarge
 
 .PHONY: cluster/delete
 ## cluster/delete: deletes kind cluster
 cluster/delete:
 	@kind delete cluster --name operator
+
+.PHONY: helm3/install
+helm3/install:
+	helm upgrade \
+		--install eks-ebs-node-operator deploy/helm3/eks-ebs-node-operator \
+		--namespace eks-ebs-node-operator \
+		--recreate-pods \
+		--create-namespace
+
+.PHONY: helm3/remove
+helm3/remove:
+	helm delete eks-ebs-node-operator --namespace eks-ebs-node-operator
+
+.PHONY: helm2/install
+helm2/install:
+	helm upgrade \
+		--install eks-ebs-node-operator deploy/helm2/eks-ebs-node-operator \
+		--namespace eks-ebs-node-operator \
+		--recreate-pods
+
+.PHONY: helm2/remove
+helm2/remove:
+	helm delete --purge eks-ebs-node-operator
 
 .PHONY: help
 ## help: prints this help message

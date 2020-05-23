@@ -8,8 +8,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "eks-ebs-node-operator.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "eks-ebs-node-operator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -17,8 +16,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        app.kubernetes.io/name: {{ include "eks-ebs-node-operator.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "eks-ebs-node-operator.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "eks-ebs-node-operator.serviceAccountName" . }}
       {{- if .Values.priorityClassName }}
@@ -37,7 +35,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command:
           - eks-ebs-node-operator
           imagePullPolicy: {{ .Values.image.pullPolicy }}

@@ -17,3 +17,22 @@ custom resource limit, but pods needs to consume this resource via `resources`,
 like CPU or Memory. Kubernetes will automatically calculate the amount of EBS
 volume attachments left on a node and will not schedule pods with EBS volumes if
 the resource is exhausted.
+
+# Limits
+
+The limit calculation is based on:
+
+* https://github.com/kubernetes/kubernetes/issues/80967
+* https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html
+
+> where:
+
+* A1, C5, C5d, C5n, I3en, M5, M5a, M5ad, M5d, p3dn.24xlarge, R5, R5a, R5ad, R5d, T3, T3a, and z1d <= 28
+* 28 - 1 (root volume) - 110/interface capacity (num of interfaces) - number of NVMe volumes
+
+The definitions can be found in `pkg/controller/node/node_controller.go`
+
+# Installation
+
+Repository contains directory `deploy` with 2 helm charts, which are tested with
+helm version: `2.15.1` and `3.2.1` respectively.

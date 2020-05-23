@@ -7,6 +7,7 @@ replicaCount: 1
 image:
   repository: isindir/eks-ebs-node-operator
   pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.3"
 
 imagePullSecrets: []
@@ -20,7 +21,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name:
+  name: ""
 
 podAnnotations: {}
 
