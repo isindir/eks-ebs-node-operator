@@ -1,0 +1,44 @@
+{{- if .Values.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "eks-ebs-node-operator.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "eks-ebs-node-operator.name" . }}
+    helm.sh/chart: {{ include "eks-ebs-node-operator.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - nodes
+  - services
+  - services/finalizers
+  - endpoints
+  - events
+  - configmaps
+#  - persistentvolumeclaims
+#  - secrets
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+  - create
+  - delete
+- apiGroups: ["apps"]
+  resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["servicemonitors"]
+  verbs: ["get", "create"]
+- apiGroups: ["apps"]
+  resources: ["deployments/finalizers"]
+  resourceNames: ["eks-ebs-node-operator"]
+  verbs: ["update"]
+- apiGroups: [""]
+  resources: ["nodes/status"]
+  verbs: ["patch"]
+{{- end }}
