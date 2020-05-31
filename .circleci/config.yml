@@ -1,22 +1,19 @@
-# based on https://github.com/gavinzhou/ci-minikube
-# https://github.com/kubernetes/minikube#linux-continuous-integration-without-vm-support
 version: 2
 
 jobs:
-
   ##################################################
   # release
   ##################################################
   release:
     working_directory: /home/circleci/gogo/src/github.com/isindir/eks-ebs-node-operator
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-1604:202004-01
     environment:
       GOLANG_VERSION: 1.14.2
-      # https://github.com/github/hub/releases
-      HUB_VERSION: 2.14.2
       # https://github.com/operator-framework/operator-sdk/releases
       OPERATOR_SDK_VERSION: v0.17.1
+      # https://github.com/github/hub/releases
+      HUB_VERSION: 2.14.2
       # https://github.com/git-chglog/git-chglog/releases
       GIT_CHGLOG_VERSION: 0.9.1
     steps:
@@ -76,14 +73,15 @@ jobs:
   build:
     working_directory: /home/circleci/gogo/src/github.com/isindir/eks-ebs-node-operator
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-1604:202004-01
     environment:
-      K8S_VERSION: v1.18.2
-      GOLANG_VERSION: 1.14.2
+      # https://github.com/kubernetes/kubernetes/releases
+      K8S_VERSION: v1.18.3
       # https://github.com/kubernetes-sigs/kind/releases
       KIND_VERSION: v0.8.1
       # https://github.com/helm/helm/releases
       HELM_VERSION: v3.2.1
+      GOLANG_VERSION: 1.14.2
       # https://github.com/operator-framework/operator-sdk/releases
       OPERATOR_SDK_VERSION: v0.17.1
 
@@ -103,7 +101,7 @@ jobs:
       - run:
           name: install golang
           command: |
-            sudo rm -fr /usr/local/go
+            sudo rm -fr ${GOROOT}
             curl -sSLO https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz
             tar -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
             sudo mv go /usr/local
