@@ -55,12 +55,12 @@ spec:
   containers:
   - image: mycompany/myimage:X.Y.Z
     name: container
-	...
+    ...
     resources:
       limits:
-	    eks/attachments/EBS: "1"
+        eks/attachments/EBS: "1"
       requests:
-	    eks/attachments/EBS: "1"
+        eks/attachments/EBS: "1"
     volumeMounts:
     - mountPath: /mydata
       name: mydata
