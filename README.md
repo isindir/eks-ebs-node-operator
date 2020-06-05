@@ -36,3 +36,43 @@ The definitions can be found in `pkg/controller/node/node_controller.go`
 
 Repository contains directory `deploy` with 2 helm charts, which are tested with
 helm version: `2.15.1` and `3.2.1` respectively.
+
+# Containers configuration
+
+To consume imposed custom resource limit `eks/attachments/EBS`, the resource
+request and limit must be set for each container in the cluster which attaches
+EBS volume as PV. Same example can be used to configure `StatefulSet`,
+`DaemonSet`, `Deployment` or `ReplicaSet`, for example the pod which have one
+container and mounts one EBS volume will have similar to following definition:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+  namespace: default
+spec:
+  containers:
+  - image: mycompany/myimage:X.Y.Z
+    name: container
+	...
+    resources:
+      limits:
+	    eks/attachments/EBS: "1"
+      requests:
+	    eks/attachments/EBS: "1"
+    volumeMounts:
+    - mountPath: /mydata
+      name: mydata
+  volumes:
+  - name: mydata
+    persistentVolumeClaim:
+      claimName: my-data-0
+  ...
+```
+
+Use `kubectl describe node` to see that pod consumed 1 custom resource.
+
+# Credits
+
+* Yevhen Volchenko for the idea to use custom resource limits
