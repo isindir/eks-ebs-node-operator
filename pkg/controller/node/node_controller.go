@@ -22,7 +22,7 @@ import (
 
 var log = logf.Log.WithName("controller_node")
 
-const extendedResourceName string = "eks~1attachments~1EBS"
+const extendedResourceName string = "eksattachments"
 
 const filterLabel string = "beta.kubernetes.io/instance-type"
 
