@@ -39,7 +39,7 @@ helm version: `2.15.1` and `3.2.1` respectively.
 
 # Containers configuration
 
-To consume imposed custom resource limit `eks/attachments/EBS`, the resource
+To consume imposed custom resource limit `eksattachments`, the resource
 request and limit must be set for each container in the cluster which attaches
 EBS volume as PV. Same example can be used to configure `StatefulSet`,
 `DaemonSet`, `Deployment` or `ReplicaSet`, for example the pod which have one
@@ -58,9 +58,9 @@ spec:
     ...
     resources:
       limits:
-        eks/attachments/EBS: "1"
+        eksattachments: "1"
       requests:
-        eks/attachments/EBS: "1"
+        eksattachments: "1"
     volumeMounts:
     - mountPath: /mydata
       name: mydata
