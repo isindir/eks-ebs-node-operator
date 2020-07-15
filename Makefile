@@ -110,9 +110,14 @@ run/local:
 .PHONY: cluster/create
 ## cluster/create: creates kind cluster and adds test label to a node
 cluster/create:
-	@kind create cluster --quiet --name operator
+	@kind create cluster \
+		--quiet \
+		--name operator \
+		--config .circleci/kind-operator-config.yaml
 	@kubectl label nodes \
-		operator-control-plane beta.kubernetes.io/instance-type=m5a.2xlarge
+		operator-control-plane node.kubernetes.io/instance-type=m5a.2xlarge
+	@kubectl label nodes \
+		operator-worker beta.kubernetes.io/instance-type=m5a.2xlarge
 
 .PHONY: cluster/delete
 ## cluster/delete: deletes kind cluster
@@ -129,7 +134,7 @@ helm3/install:
 
 .PHONY: helm3/remove
 helm3/remove:
-	helm delete eks-ebs-node-operator --namespace eks-ebs-node-operator
+	helm uninstall eks-ebs-node-operator --namespace eks-ebs-node-operator
 
 .PHONY: helm2/install
 helm2/install:

@@ -20,11 +20,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
-var log = logf.Log.WithName("controller_node")
-
 const extendedResourceName string = "eksattachments"
 
-const filterLabel string = "beta.kubernetes.io/instance-type"
+//const filterLabel string = "beta.kubernetes.io/instance-type"
+
+var (
+	log          = logf.Log.WithName("controller_node")
+	filterLabels = []string{
+		"node.kubernetes.io/instance-type",
+		"beta.kubernetes.io/instance-type",
+	}
+)
 
 // Based on calculation from: https://github.com/kubernetes/kubernetes/issues/80967
 // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html
@@ -371,7 +377,15 @@ func (r *ReconcileNode) Reconcile(request reconcile.Request) (reconcile.Result, 
 		return reconcile.Result{}, err
 	}
 
-	nodeType, typeFound := instance.Labels[filterLabel]
+	typeFound := false
+	nodeType := "---"
+	for _, filterLabel := range filterLabels {
+		nodeType, typeFound = instance.Labels[filterLabel]
+		if typeFound {
+			break
+		}
+	}
+
 	extResourceValue, resValueFound := instance.Status.Capacity[corev1api.ResourceName(extendedResourceName)]
 	if typeFound {
 		volumes := volumesPerNodeType[nodeType]

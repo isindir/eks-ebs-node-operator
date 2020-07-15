@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: isindir/eks-ebs-node-operator
   pullPolicy: IfNotPresent
-  tag: "0.0.4"
+  tag: "0.0.5"
 
 imagePullSecrets: []
 nameOverride: ""
