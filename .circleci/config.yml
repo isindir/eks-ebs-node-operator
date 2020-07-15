@@ -171,7 +171,7 @@ jobs:
           name: Run Local Tests
           command: |
             nohup make run/local &
-            sleep 75
+            sleep 150
             RESULT=$( kubectl get node operator-control-plane -o json | jq -r '.status.capacity["eksattachments"]' )
             if [[ $RESULT != "23" ]]; then
               echo "Pipeline failed"
