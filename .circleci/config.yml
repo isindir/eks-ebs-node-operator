@@ -133,18 +133,20 @@ jobs:
       - run:
           name: start kind
           command: |
-            kind create cluster --quiet --name operator
+            kind create cluster --quiet --name operator --config .circleci/kind-operator-config.yaml
             JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
             until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
               sleep 1;
             done
 
             kubectl label nodes operator-control-plane node.kubernetes.io/instance-type=m5a.2xlarge
+            kubectl label nodes operator-worker beta.kubernetes.io/instance-type=m5a.2xlarge
 
             # Dump cluster info
             kubectl cluster-info
             kubectl version
             kubectl describe node operator-control-plane
+            kubectl describe node operator-worker
       - run:
           name: install helm
           command: |
@@ -173,6 +175,14 @@ jobs:
             nohup make run/local &
             sleep 150
             RESULT=$( kubectl get node operator-control-plane -o json | jq -r '.status.capacity["eksattachments"]' )
+            if [[ $RESULT != "23" ]]; then
+              echo "Pipeline failed"
+              exit 1
+            else
+              echo "Success"
+            fi
+            sleep 10
+            RESULT=$( kubectl get node operator-worker -o json | jq -r '.status.capacity["eksattachments"]' )
             if [[ $RESULT != "23" ]]; then
               echo "Pipeline failed"
               exit 1
