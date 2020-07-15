@@ -129,7 +129,7 @@ helm3/install:
 
 .PHONY: helm3/remove
 helm3/remove:
-	helm delete eks-ebs-node-operator --namespace eks-ebs-node-operator
+	helm uninstall eks-ebs-node-operator --namespace eks-ebs-node-operator
 
 .PHONY: helm2/install
 helm2/install:
