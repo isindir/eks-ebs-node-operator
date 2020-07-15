@@ -139,7 +139,7 @@ jobs:
               sleep 1;
             done
 
-            kubectl label nodes operator-control-plane nodes.kubernetes.io/instance-type=m5a.2xlarge
+            kubectl label nodes operator-control-plane node.kubernetes.io/instance-type=m5a.2xlarge
 
             # Dump cluster info
             kubectl cluster-info
