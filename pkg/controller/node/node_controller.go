@@ -379,7 +379,7 @@ func (r *ReconcileNode) Reconcile(request reconcile.Request) (reconcile.Result, 
 
 	typeFound := false
 	nodeType := "---"
-	for _, filterLabel := range dogs {
+	for _, filterLabel := range filterLabels {
 		nodeType, typeFound = instance.Labels[filterLabel]
 		if typeFound {
 			break

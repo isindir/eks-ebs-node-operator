@@ -9,7 +9,7 @@ jobs:
     machine:
       image: ubuntu-1604:202004-01
     environment:
-      GOLANG_VERSION: 1.14.2
+      GOLANG_VERSION: 1.14.4
       # https://github.com/operator-framework/operator-sdk/releases
       OPERATOR_SDK_VERSION: v0.17.1
       # https://github.com/github/hub/releases
@@ -80,8 +80,8 @@ jobs:
       # https://github.com/kubernetes-sigs/kind/releases
       KIND_VERSION: v0.8.1
       # https://github.com/helm/helm/releases
-      HELM_VERSION: v3.2.1
-      GOLANG_VERSION: 1.14.2
+      HELM_VERSION: v3.2.4
+      GOLANG_VERSION: 1.14.4
       # https://github.com/operator-framework/operator-sdk/releases
       OPERATOR_SDK_VERSION: v0.17.1
 
@@ -139,7 +139,7 @@ jobs:
               sleep 1;
             done
 
-            kubectl label nodes operator-control-plane beta.kubernetes.io/instance-type=m5a.2xlarge
+            kubectl label nodes operator-control-plane nodes.kubernetes.io/instance-type=m5a.2xlarge
 
             # Dump cluster info
             kubectl cluster-info
