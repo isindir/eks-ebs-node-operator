@@ -20,7 +20,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
-const extendedResourceName string = "eksattachments"
+const extendedResourceName string = "eks.ebsnodeoperator~1attachments"
 
 //const filterLabel string = "beta.kubernetes.io/instance-type"
 
