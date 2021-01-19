@@ -58,9 +58,9 @@ spec:
     ...
     resources:
       limits:
-	    eks.ebsnodeoperator/attachments: "1"
+        eks.ebsnodeoperator/attachments: "1"
       requests:
-	    eks.ebsnodeoperator/attachments: "1"
+        eks.ebsnodeoperator/attachments: "1"
     volumeMounts:
     - mountPath: /mydata
       name: mydata
