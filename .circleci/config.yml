@@ -174,7 +174,7 @@ jobs:
           command: |
             nohup make run/local &
             sleep 150
-            RESULT=$( kubectl get node operator-control-plane -o json | jq -r '.status.capacity["eksattachments"]' )
+            RESULT=$( kubectl get node operator-control-plane -o json | jq -r '.status.capacity["eks.ebsnodeoperator/attachments"]' )
             if [[ $RESULT != "23" ]]; then
               echo "Pipeline failed"
               exit 1
@@ -182,7 +182,7 @@ jobs:
               echo "Success"
             fi
             sleep 10
-            RESULT=$( kubectl get node operator-worker -o json | jq -r '.status.capacity["eksattachments"]' )
+            RESULT=$( kubectl get node operator-worker -o json | jq -r '.status.capacity["eks.ebsnodeoperator/attachments"]' )
             if [[ $RESULT != "23" ]]; then
               echo "Pipeline failed"
               exit 1
