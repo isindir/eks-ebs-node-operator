@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 0.0.5
+appVersion: 0.0.6
 description: Chart to deploy eks-ebs-node-operator
 name: eks-ebs-node-operator
 type: application
